@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QR Designer · UI Prototype</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+        <span>QR Designer</span>
+        <span class="prototype-badge">交互原型</span>
+      </div>
+      <div class="top-actions">
+        <button class="icon-button" type="button" aria-label="撤销" disabled>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7 4 12l5 5M5 12h8a6 6 0 0 1 6 6"/></svg>
+        </button>
+        <button class="icon-button" type="button" aria-label="重做" disabled>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 7 5 5-5 5m4-5h-8a6 6 0 0 0-6 6"/></svg>
+        </button>
+        <div class="recognition-status is-ok" id="top-status">
+          <span class="status-dot"></span>
+          <span class="status-copy">可正常识别</span>
+        </div>
+        <button class="button button-primary" type="button" data-nav-target="export">导出</button>
+      </div>
+    </header>
+
+    <nav class="sidebar" aria-label="主功能">
+      <button class="nav-item" type="button" data-page="content">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h8l4 4v14H7zM15 3v5h5M10 13h6M10 17h6"/></svg>
+        <span>内容</span>
+      </button>
+      <button class="nav-item is-active" type="button" data-page="qr">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM15 14h2v2h-2zM19 14h1v4h-3v2h-3v-3h2"/></svg>
+        <span>二维码</span>
+      </button>
+      <button class="nav-item" type="button" data-page="finder">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM6 6h3v3H6zM15 6h3v3h-3zM6 15h3v3H6z"/></svg>
+        <span>定位点</span>
+      </button>
+      <button class="nav-item" type="button" data-page="color">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18h1.2a1.8 1.8 0 0 0 .6-3.5 1.7 1.7 0 0 1 1.1-3.2H18a3 3 0 0 0 3-3C21 6.7 17 3 12 3Z"/><circle cx="7.5" cy="11" r="1"/><circle cx="10" cy="7" r="1"/><circle cx="15" cy="7.5" r="1"/></svg>
+        <span>颜色</span>
+      </button>
+      <button class="nav-item" type="button" data-page="logo">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="2"/><path d="m5 18 5-5 3 3 2-2 4 4"/></svg>
+        <span>Logo</span>
+      </button>
+      <button class="nav-item" type="button" data-page="background">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3s6 6.1 6 11a6 6 0 0 1-12 0c0-4.9 6-11 6-11Z"/></svg>
+        <span>背景</span>
+      </button>
+      <div class="nav-spacer"></div>
+      <button class="nav-item" type="button" data-page="export">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-4-4 4 4 4-4M5 17v3h14v-3"/></svg>
+        <span>导出</span>
+      </button>
+    </nav>
+
+    <main class="workspace">
+      <div class="canvas-toolbar">
+        <div class="tool-group">
+          <button class="tool-button is-active" type="button" id="tool-select">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 3 13 9-6 1-3 6z"/></svg>
+            选择
+          </button>
+          <button class="tool-button" type="button" id="tool-hand">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 11V7a2 2 0 0 1 4 0v3-5a2 2 0 0 1 4 0v5-3a2 2 0 0 1 4 0v7c0 5-3 7-7 7-3 0-5-2-7-5l-2-3a2 2 0 0 1 3-2l1 1"/></svg>
+            抓手
+          </button>
+        </div>
+        <div class="tool-group canvas-view-options">
+          <label class="compact-check"><input type="checkbox" id="show-grid"> 模块网格</label>
+          <label class="compact-check"><input type="checkbox" id="show-safe"> 安全区</label>
+          <button class="icon-button" type="button" id="fit-canvas" aria-label="适应窗口">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <section class="canvas-stage" id="canvas-stage" aria-label="二维码实时画布">
+        <div class="artboard-wrap" id="artboard-wrap">
+          <div class="artboard" id="artboard">
+            <canvas id="qr-canvas" width="720" height="720" aria-label="二维码预览"></canvas>
+            <div class="module-grid" id="module-grid" aria-hidden="true"></div>
+            <div class="logo-safe-overlay" id="logo-safe-overlay" aria-hidden="true"></div>
+            <div class="logo-object" id="logo-object" aria-label="Logo 编辑框">
+              <span class="logo-symbol">Q</span>
+              <i class="resize-handle handle-nw"></i><i class="resize-handle handle-ne"></i>
+              <i class="resize-handle handle-sw"></i><i class="resize-handle handle-se"></i>
+            </div>
+          </div>
+          <div class="artboard-label">1024 × 1024 px</div>
+        </div>
+      </section>
+
+      <aside class="inspector" id="inspector">
+        <section class="panel-page" data-panel="content">
+          <div class="panel-header"><div><p class="eyebrow">CONTENT</p><h1>内容</h1></div></div>
+          <div class="panel-scroll">
+            <label class="field-label" for="qr-content">二维码内容</label>
+            <textarea class="textarea" id="qr-content" rows="5">https://example.com/design</textarea>
+            <label class="field-label" for="content-type">内容类型</label>
+            <select class="select" id="content-type"><option>自动识别</option><option>网址</option><option>文本</option><option>Wi-Fi</option></select>
+            <div class="section-block">
+              <div class="section-title">纠错等级</div>
+              <div class="segmented" id="ecc-control" role="group" aria-label="纠错等级">
+                <button type="button" data-ecc="L">L</button><button type="button" data-ecc="M">M</button><button type="button" data-ecc="Q">Q</button><button class="is-selected" type="button" data-ecc="H">H</button>
+              </div>
+            </div>
+            <label class="field-label" for="qr-version">QR Version</label>
+            <select class="select" id="qr-version"><option value="0">自动</option></select>
+            <div class="capacity-row"><span>容量</span><strong id="capacity-copy">0 bytes · 自动版本</strong></div>
+            <div class="capacity-track"><span id="capacity-bar" style="width:0"></span></div>
+            <div class="field-error is-hidden" id="content-error">内容超过当前二维码容量</div>
+          </div>
+        </section>
+
+        <section class="panel-page is-active" data-panel="qr">
+          <div class="panel-header">
+            <div><p class="eyebrow">MODULE STYLE</p><h1>普通模块</h1></div>
+            <button class="icon-button" id="reset-style" type="button" aria-label="恢复默认">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2-5.3L4 9m0-5v5h5"/></svg>
+            </button>
+          </div>
+          <div class="panel-scroll">
+            <div class="section-block no-top">
+              <div class="section-title">形状</div>
+              <div class="shape-options" role="group" aria-label="模块形状">
+                <button class="shape-button is-selected" type="button" data-shape="square"><span class="shape-preview square"></span>方形</button>
+                <button class="shape-button" type="button" data-shape="circle"><span class="shape-preview circle"></span>圆形</button>
+                <button class="shape-button" type="button" data-shape="rounded"><span class="shape-preview rounded"></span>圆角</button>
+              </div>
+            </div>
+            <div class="slider-stack">
+              <div class="safety-slider" data-key="rounding" data-label="圆角" data-value="12" data-safe-min="0" data-safe-max="76"></div>
+              <div class="safety-slider" data-key="moduleSize" data-label="模块大小" data-value="88" data-safe-min="42" data-safe-max="94"></div>
+              <div class="safety-slider" data-key="spacing" data-label="模块间距" data-value="14" data-safe-min="0" data-safe-max="48"></div>
+            </div>
+            <details class="advanced-section">
+              <summary>高级</summary>
+              <div class="advanced-content">
+                <div class="setting-row"><div><strong>校准点</strong><span>跟随定位点</span></div><button class="text-button" type="button">设置</button></div>
+                <div class="setting-row"><div><strong>Timing Pattern</strong><span>跟随普通模块</span></div><button class="text-button" type="button">设置</button></div>
+                <label class="switch-row"><span><strong>功能模块保护</strong><small>Format / Version 自动保护</small></span><input type="checkbox" checked><i></i></label>
+              </div>
+            </details>
+          </div>
+        </section>
+
+        <section class="panel-page" data-panel="finder">
+          <div class="panel-header"><div><p class="eyebrow">FINDER PATTERN</p><h1>定位点</h1></div></div>
+          <div class="panel-scroll">
+            <label class="switch-row no-border"><span><strong>三个定位点同步</strong><small>统一应用外框和中心样式</small></span><input id="sync-finders" type="checkbox" checked><i></i></label>
+            <div class="finder-tabs is-hidden" id="finder-tabs"><button class="is-selected" data-finder="tl">左上</button><button data-finder="tr">右上</button><button data-finder="bl">左下</button></div>
+            <div class="section-block"><div class="section-title">定位点外框</div>
+              <div class="shape-options compact" id="finder-outer-shapes"><button class="shape-button is-selected" type="button" data-finder-part="finderOuterShape" data-finder-shape="square"><span class="shape-preview square"></span>方形</button><button class="shape-button" type="button" data-finder-part="finderOuterShape" data-finder-shape="circle"><span class="shape-preview circle"></span>圆形</button><button class="shape-button" type="button" data-finder-part="finderOuterShape" data-finder-shape="rounded"><span class="shape-preview rounded"></span>圆角</button></div>
+              <div class="slider-stack inset"><div class="safety-slider" data-key="finderRounding" data-label="圆角" data-value="8" data-safe-min="0" data-safe-max="68"></div><div class="safety-slider" data-key="finderSize" data-label="尺寸" data-value="100" data-safe-min="72" data-safe-max="100"></div></div>
+            </div>
+            <div class="section-block"><div class="section-title">定位点中心</div>
+              <div class="shape-options compact" id="finder-core-shapes"><button class="shape-button is-selected" type="button" data-finder-part="finderCoreShape" data-finder-shape="square"><span class="shape-preview square"></span>方形</button><button class="shape-button" type="button" data-finder-part="finderCoreShape" data-finder-shape="circle"><span class="shape-preview circle"></span>圆形</button><button class="shape-button" type="button" data-finder-part="finderCoreShape" data-finder-shape="rounded"><span class="shape-preview rounded"></span>圆角</button></div>
+              <div class="slider-stack inset"><div class="safety-slider" data-key="finderCore" data-label="中心尺寸" data-value="74" data-safe-min="58" data-safe-max="86"></div></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel-page" data-panel="color">
+          <div class="panel-header"><div><p class="eyebrow">APPEARANCE</p><h1>二维码前景</h1></div></div>
+          <div class="panel-scroll">
+            <div class="segmented wide" id="color-mode" role="group"><button class="is-selected" type="button" data-color-mode="solid">单色</button><button type="button" data-color-mode="gradient">渐变</button><button type="button" data-color-mode="image">图片</button></div>
+            <div class="color-mode-panel is-active" data-color-panel="solid">
+              <label class="field-label">颜色</label>
+              <div class="color-field"><input type="color" id="foreground-color" value="#171A1F"><input type="text" value="#171A1F" id="foreground-hex" aria-label="前景色十六进制"></div>
+            </div>
+            <div class="color-mode-panel" data-color-panel="gradient">
+              <label class="field-label">渐变类型</label>
+              <select class="select" id="gradient-type"><option value="linear">线性</option><option value="radial">径向</option><option value="conic">角度</option></select>
+              <div class="gradient-colors"><input type="color" id="gradient-start" value="#5367F0"><span>→</span><input type="color" id="gradient-end" value="#B446E4"></div>
+              <div class="slider-stack inset"><div class="safety-slider" data-key="gradientAngle" data-label="渐变角度" data-value="45" data-min="0" data-max="360" data-safe-min="0" data-safe-max="360" data-unit="°"></div></div>
+            </div>
+            <div class="color-mode-panel" data-color-panel="image">
+              <label class="upload-zone" for="texture-file"><strong>导入图片纹理</strong><span>PNG / JPG / WebP</span></label><input class="visually-hidden" id="texture-file" type="file" accept="image/png,image/jpeg,image/webp">
+              <div class="slider-stack inset"><div class="safety-slider" data-key="textureStrength" data-label="图片强度" data-value="72" data-safe-min="0" data-safe-max="86"></div><div class="safety-slider" data-key="textureContrast" data-label="对比度" data-value="58" data-safe-min="35" data-safe-max="100"></div></div>
+            </div>
+            <div class="slider-stack"><div class="safety-slider" data-key="opacity" data-label="透明度" data-value="100" data-safe-min="41" data-safe-max="100"></div></div>
+            <div class="contrast-info"><span class="contrast-icon">Aa</span><div><strong>对比度充足</strong><small>当前前景与背景可可靠识别</small></div></div>
+          </div>
+        </section>
+
+        <section class="panel-page" data-panel="logo">
+          <div class="panel-header"><div><p class="eyebrow">CENTER MARK</p><h1>Logo</h1></div></div>
+          <div class="panel-scroll">
+            <div class="logo-preview-card"><div class="logo-preview" id="logo-preview">Q</div><div><strong>中心图标</strong><span id="logo-file-name">内置示例图标</span></div><label class="text-button file-button" for="logo-file">替换</label><input class="visually-hidden" id="logo-file" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml"></div>
+            <div class="section-block"><div class="section-title">Logo 形状</div><div class="shape-options compact"><button class="shape-button is-selected" type="button">原图</button><button class="shape-button" type="button"><span class="shape-preview circle"></span>圆形</button><button class="shape-button" type="button"><span class="shape-preview rounded"></span>圆角</button></div></div>
+            <div class="slider-stack"><div class="safety-slider" data-key="logoSize" data-label="Logo 大小" data-value="15" data-safe-min="0" data-safe-max="31"></div><div class="safety-slider" data-key="logoGap" data-label="周围空隙" data-value="1" data-min="0" data-max="8" data-safe-min="0" data-safe-max="4" data-unit=" 模块"></div><div class="safety-slider" data-key="logoRounding" data-label="圆角" data-value="18" data-safe-min="0" data-safe-max="72"></div></div>
+            <div class="logo-grid-readout" id="logo-grid-readout">Logo 5 × 5 模块 · 每侧间隙 1 模块</div>
+            <label class="switch-row no-border logo-gap-lock"><span><strong>保持 1 个模块间隙</strong><small>每侧始终空出一个完整二维码 module</small></span><input id="one-module-gap" type="checkbox" checked><i></i></label>
+            <div class="logo-actions"><button class="button button-secondary" id="remove-logo-bg" type="button">自动去背景</button><button class="button button-secondary" id="remove-logo" type="button">隐藏 Logo</button></div>
+          </div>
+        </section>
+
+        <section class="panel-page" data-panel="background">
+          <div class="panel-header"><div><p class="eyebrow">CANVAS</p><h1>背景</h1></div></div>
+          <div class="panel-scroll">
+            <div class="segmented wide" id="background-mode"><button class="is-selected" type="button" data-background="solid">纯色</button><button type="button" data-background="transparent">透明</button></div>
+            <label class="field-label">背景颜色</label>
+            <div class="color-field"><input type="color" id="background-color" value="#FFFFFF"><input type="text" value="#FFFFFF" id="background-hex" aria-label="背景色十六进制"></div>
+            <div class="notice"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5m0-8h.01"/></svg><span>透明模式下可设置目标背景模拟，模拟内容不会进入最终导出。</span></div>
+          </div>
+        </section>
+
+        <section class="panel-page" data-panel="export">
+          <div class="panel-header"><div><p class="eyebrow">FINAL OUTPUT</p><h1>导出二维码</h1></div></div>
+          <div class="panel-scroll">
+            <div class="section-title">格式</div><div class="segmented wide" id="export-format"><button class="is-selected" data-format="png">PNG</button><button data-format="svg">SVG</button></div>
+            <label class="field-label">尺寸</label><div class="size-fields"><input class="input" id="export-width" value="1024" inputmode="numeric"><span>×</span><input class="input" id="export-height" value="1024" inputmode="numeric"><span>px</span></div>
+            <div class="preset-row" id="size-presets"><button data-size="512">512</button><button class="is-selected" data-size="1024">1024</button><button data-size="2048">2048</button><button data-size="4096">4096</button></div>
+            <div class="section-block"><div class="section-title validation-title"><span>导出检查</span><button class="text-button" id="deep-check" type="button">运行深度检查</button></div><ul class="check-list"><li><span>二维码结构</span><b id="check-structure">✓</b></li><li><span>ZXing</span><b id="check-zxing">待检查</b></li><li><span>jsQR 二次识别</span><b id="check-jsqr">待检查</b></li><li><span>缩放与模糊测试</span><b id="check-stress">待检查</b></li><li><span>对比度测试</span><b id="check-contrast">✓</b></li></ul><div class="export-error is-hidden" id="export-error"><strong>当前设计无法可靠识别</strong><span id="export-error-reason"></span><button class="button button-secondary button-full" id="auto-fix" type="button">自动调整到可识别状态</button></div></div>
+            <button class="button button-primary button-full export-button" id="export-button" type="button">导出二维码</button>
+          </div>
+        </section>
+      </aside>
+    </main>
+
+    <footer class="statusbar">
+      <div class="status-group"><span id="status-version">QR V—</span><span id="status-ecc">H</span><span id="status-modules">— × — modules</span><span id="status-bytes">0 bytes</span></div>
+      <div class="status-group validation"><span id="status-zxing"><i class="mini-pending">·</i> ZXing</span><span id="status-jsqr"><i class="mini-pending">·</i> jsQR</span></div>
+      <div class="status-group zoom-control"><button id="zoom-out" aria-label="缩小">−</button><input type="range" id="zoom-slider" min="50" max="200" value="100"><button id="zoom-in" aria-label="放大">＋</button><span id="zoom-value">100%</span></div>
+    </footer>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  </div>
+  <script src="vendor/qrcode.js"></script>
+  <script src="vendor/jsQR.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
